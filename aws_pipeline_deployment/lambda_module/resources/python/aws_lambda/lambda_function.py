@@ -27,4 +27,9 @@ def lambda_handler(event, context):
                     "body": json.dumps(employees, default=str)  
             }
 
+    if method == "POST":
+        payload = json.loads(event["body"])
+        print(payload)
+
+
     
