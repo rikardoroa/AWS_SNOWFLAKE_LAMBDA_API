@@ -41,5 +41,5 @@ jobs:
           -r $SNOWFLAKE_ROLE \
           -w $SNOWFLAKE_WH \
           -c $SNOWFLAKE_DB.$SNOWFLAKE_SCHEMA.CHANGE_HISTORY \
-          --vars $SCHEMACHANGE_VAR \
+          --var $SCHEMACHANGE_VAR \
           --verbose
