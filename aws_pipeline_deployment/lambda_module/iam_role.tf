@@ -1,5 +1,5 @@
-resource "aws_iam_role" "iam_dev_role" {
-  name = "iam_for_dev_layer"
+resource "aws_iam_role" "iam_dev_role_snowflake" {
+  name = "iam_for_dev_layer_snowflake"
   
   assume_role_policy = jsonencode({
     Version = "2012-10-17",

@@ -1,5 +1,5 @@
 output "iam_for_dev_name" {
-  value = aws_iam_role.iam_dev_role.name
+  value = aws_iam_role.iam_dev_role_snowflake.name
 }
 
 output "policy_for_dev" {
@@ -7,5 +7,5 @@ output "policy_for_dev" {
 }
 
 output "iam_for_dev_arn" {
-  value = aws_iam_role.iam_dev_role.arn
+  value = aws_iam_role.iam_dev_role_snowflake.arn
 }
