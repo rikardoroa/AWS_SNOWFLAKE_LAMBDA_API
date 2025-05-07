@@ -1,0 +1,45 @@
+name: SNOWFLAKE CREATION RESOURCES
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy_to_snowflake:
+    name: "Snowflake creation resources"
+    runs-on: ubuntu-latest
+
+    env:
+      SNOWFLAKE_ACCOUNT: ${{  secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER: ${{  secrets.SNOWFLAKE_USER }}
+      SNOWFLAKE_ROLE: ${{  secrets.SNOWFLAKE_ROLE }}
+      SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+      SNOWFLAKE_WH: ${{  secrets.SNOWFLAKE_WH }}
+      SNOWFLAKE_DB: ${{  secrets.SNOWFLAKE_DB }}
+      SNOWFLAKE_SCHEMA : ${{  secrets.SNOWFLAKE_SCHEMA }}
+      #variables for change scripts in JSON format : {"target_db":"DB_NAME"}
+      SCHEMACHANGE_VAR: ${{ secrets.SCHEMACHANGE_VAR }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.9.17
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9.17'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install schemachange
+
+      - name: Run schemachange
+        if: ${{ success() }}
+        run: |
+          schemachange -f ${GITHUB_WORKSPACE}/resource_queries \
+          -a $SNOWFLAKE_ACCOUNT \
+          -u $SNOWFLAKE_USER \
+          -r $SNOWFLAKE_ROLE \
+          -w $SNOWFLAKE_WH \
+          -c $SNOWFLAKE_DB.$SNOWFLAKE_SCHEMA.CHANGE_HISTORY \
+          --var $SCHEMACHANGE_VAR \
+          --verbose
