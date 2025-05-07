@@ -10,29 +10,6 @@ resource "aws_iam_role" "iam_dev_role_snowflake" {
         Principal = {
           Service = "lambda.amazonaws.com"  
         },
-      },
-      {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Principal = {
-          Service = "scheduler.amazonaws.com"
-        },
-      },
-
-      { 
-        Action = "sts:AssumeRole",
-        Effect = "Allow"
-        Principal = {
-          Service = "states.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      },
-      {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Principal = {
-          Service = "glue.amazonaws.com"
-        },
       }
     ]
   })
@@ -68,8 +45,7 @@ data "aws_iam_policy_document" "pipeline_dev_policy_snowflake" {
       "s3:GetObject",
       "s3:DeleteObject",
       "kms:*",
-      "states:*",
-      "glue:StartJobRun"
+      "secretsmanager:GetSecretValue"
     ]
     resources = ["*"]
   }
