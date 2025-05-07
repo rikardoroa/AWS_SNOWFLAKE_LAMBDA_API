@@ -1,4 +1,4 @@
-resource "aws_iam_role" "iam_for_dev" {
+resource "aws_iam_role" "iam_dev_role" {
   name = "iam_for_dev_layer"
   
   assume_role_policy = jsonencode({
@@ -39,7 +39,7 @@ resource "aws_iam_role" "iam_for_dev" {
 }
 
 
-data "aws_iam_policy_document" "pipeline_dev_policy" {
+data "aws_iam_policy_document" "pipeline_dev_policy_snowflake" {
   statement {
     effect = "Allow"
     actions = [

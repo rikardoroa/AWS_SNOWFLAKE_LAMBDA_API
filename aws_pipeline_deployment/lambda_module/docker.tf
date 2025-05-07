@@ -6,7 +6,7 @@ provider "docker" {
 
 # ECR repo creation
 resource "aws_ecr_repository" "lambda_repository" {
-  name                 = "lambda-docker-repo"
+  name                 = "lambda-api-snowflake-repo"
   image_tag_mutability = "MUTABLE"
   image_scanning_configuration {
     scan_on_push = true

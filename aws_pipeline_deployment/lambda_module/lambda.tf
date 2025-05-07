@@ -1,8 +1,8 @@
 #lambda role and policy
 resource "aws_iam_role_policy" "lambda_s3_monitoring" {
   name   = "lambda_logging_with_layer"
-  role   = aws_iam_role.iam_for_dev.name
-  policy = data.aws_iam_policy_document.pipeline_dev_policy.json
+  role   = aws_iam_role.iam_dev_role.name
+  policy = data.aws_iam_policy_document.pipeline_dev_policy_snowflake.json
 }
 
 # wait 10 seconds until image aprovisioning
@@ -23,7 +23,7 @@ resource "aws_lambda_function" "lambda_function" {
   function_name = "api-incd-docker-lambda"
   image_uri     = "${aws_ecr_repository.lambda_repository.repository_url}:latest"
   package_type  = "Image"
-  role          = aws_iam_role.iam_for_dev.arn
+  role          = aws_iam_role.iam_dev_role.arn
   timeout =     var.lambda_timeout
   memory_size   = 500
   depends_on = [
