@@ -27,5 +27,4 @@ def lambda_handler(event, context):
                     "body": json.dumps(employees, default=str)  
             }
 
-
     

@@ -30,3 +30,26 @@ resource "aws_lambda_function" "lambda_function" {
     null_resource.wait_for_image
   ]
 }
+
+
+# s3 invokation
+resource "aws_lambda_permission" "allow_s3" {
+  statement_id  = "AllowS3Invoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_function.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.bucket_creation.arn
+}
+
+# lambda trigger
+resource "aws_s3_bucket_notification" "notify_lambda" {
+  bucket =  aws_s3_bucket.bucket_creation.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.lambda_function.arn
+    events              = ["s3:ObjectCreated:*"]  # react to any new object
+    filter_suffix       = ".csv"                  # optional ,only .csv files
+  }
+
+  depends_on = [aws_lambda_permission.allow_s3]   # ensure permission exists first
+}
