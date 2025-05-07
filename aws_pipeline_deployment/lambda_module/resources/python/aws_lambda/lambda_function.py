@@ -5,13 +5,27 @@ def lambda_handler(event, context):
     
     api = SnowflakeApi()
     api.get_secret()
-    emp = api.get_employee_data()
-    print(emp)
 
 
+    method = event.get("httpMethod", "").upper()
 
-    # TODO implement
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
-    }
+    if method == "GET":
+        try:
+            employees = api.get_employee_data()
+            #print(employees)
+
+            return {
+                    "statusCode": status_code,
+                    "headers": {"Content-Type": "application/json"},
+                    "body": json.dumps({"error": str(e)}, default=str)  
+            }
+
+        except Exception as e:
+            return  {
+                    "statusCode": 500,
+                    "headers": {"Content-Type": "application/json"},
+                    "body": json.dumps(employees, default=str)  
+            }
+
+
+    
