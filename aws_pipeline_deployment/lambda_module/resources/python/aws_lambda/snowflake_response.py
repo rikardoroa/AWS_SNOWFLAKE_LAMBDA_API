@@ -33,7 +33,7 @@ class SnowflakeApi:
     def get_employee_data(self):
         conn = self.get_connection()
         cur = conn.cursor()
-        cur.execute('select * from EMPLOYEE')
+        cur.execute('select * from EMPLOYEE order by  employee_id')
         emp_results = cur.fetchall()
 
         df = pd.DataFrame(emp_results,
