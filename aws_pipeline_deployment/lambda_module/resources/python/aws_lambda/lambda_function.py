@@ -15,21 +15,26 @@ def lambda_handler(event, context):
             #print(employees)
 
             return {
-                    "statusCode": status_code,
+                    "statusCode": 200,
                     "headers": {"Content-Type": "application/json"},
-                    "body": json.dumps({"error": str(e)}, default=str)  
+                    "body": json.dumps(employees, default=str)   
             }
 
         except Exception as e:
             return  {
                     "statusCode": 500,
                     "headers": {"Content-Type": "application/json"},
-                    "body": json.dumps(employees, default=str)  
+                    "body": json.dumps({"error": str(e)}, default=str)  
             }
 
     if method == "POST":
         payload = json.loads(event["body"])
         print(payload)
+        return {
+                    "statusCode": 200,
+                    "headers": {"Content-Type": "application/json"},
+                    "body": json.dumps({"message": "success"}, default=str)  
+                }
 
 
     
