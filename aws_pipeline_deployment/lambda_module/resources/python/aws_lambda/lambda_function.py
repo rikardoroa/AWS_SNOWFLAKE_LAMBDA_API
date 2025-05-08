@@ -14,12 +14,22 @@ def lambda_handler(event, context):
 
 
     method = event.get("httpMethod", "").upper()
+    query_params = event.get("queryStringParameters")
+    table = query_params.get("table", "").lower()
 
-    if method == "GET":
-    
-        employees = api.get_employee_data()
-        result = get_data.getdata(employees)
-        return result
+
+    if table:
+        if method == "GET":
+            result = api.get_data(table)
+            query =  get_data.getdata(result)
+            return query
+
+    else:
+        return {
+                   
+                "body": json.dumps({"error": "can't  retrieve data!, use a query"})  
+               }
+
          
 
     if method == "POST":
