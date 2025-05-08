@@ -13,15 +13,15 @@ class PostSnowflakeData:
 
 
         df = pd.DataFrame(payload)
-        chunks = round(df.shape[0] / 1000)
+        chunks = 1000
         start = 0
-        end  = 1000
-        for i in range(0,chunks):
-            chunks_df = df.loc[start:end]
-            PostSnowflakeData.insert_data(chunks_df)
-            start = end + 1
-            end = (start-1) + 1000
-
+        for i in range(0,len(df),chunks):
+            chunks_df = df.loc[start:chunks]
+            if len(chunks_df) != 0:
+                PostSnowflakeData.insert_data(chunks_df)
+            start = chunks + 1
+            chunks = (start-1) + 1000
+            
         return {
                     "statusCode": 200,
                     "headers": {"Content-Type": "application/json"},
@@ -30,11 +30,14 @@ class PostSnowflakeData:
 
     @classmethod
     def insert_data(cls, chunks):
-        conn = api.get_connection()
-        write_pandas(
-            conn=conn,
-            df=chunks,
-            table_name='EMPLOYEE',   
-            schema='API_DATA',      
-            quote_identifiers=False   
-        )
+        try:
+            conn = api.get_connection()
+            write_pandas(
+                conn=conn,
+                df=chunks,
+                table_name='EMPLOYEE',   
+                schema='API_DATA', 
+            )
+            conn.close()
+        except Exception as e:
+            print(f"this is the error:{e}")
