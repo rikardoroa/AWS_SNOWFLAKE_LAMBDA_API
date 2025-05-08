@@ -13,7 +13,7 @@ class PostSnowflakeData:
 
 
         df = pd.DataFrame(payload)
-        chunks = round(df2.shape[0] / 1000)
+        chunks = round(df.shape[0] / 1000)
         start = 0
         end  = 1000
         for i in range(0,chunks):
