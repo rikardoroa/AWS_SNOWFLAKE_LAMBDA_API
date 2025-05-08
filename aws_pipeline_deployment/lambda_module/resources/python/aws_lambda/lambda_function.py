@@ -1,24 +1,26 @@
 import json
 from snowflake_response import SnowflakeApi
+from get import GetSnowflakeData
 
 def lambda_handler(event, context):
     
     api = SnowflakeApi()
     api.get_secret()
-
+    get  = GetSnowflakeData ()
 
     method = event.get("httpMethod", "").upper()
 
     if method == "GET":
         try:
             employees = api.get_employee_data()
+            result = get.getdata(employees)
             #print(employees)
 
-            return {
-                    "statusCode": 200,
-                    "headers": {"Content-Type": "application/json"},
-                    "body": json.dumps(employees, default=str)   
-            }
+            # return {
+            #         "statusCode": 200,
+            #         "headers": {"Content-Type": "application/json"},
+            #         "body": json.dumps(employees, default=str)   
+            # }
 
         except Exception as e:
             return  {
