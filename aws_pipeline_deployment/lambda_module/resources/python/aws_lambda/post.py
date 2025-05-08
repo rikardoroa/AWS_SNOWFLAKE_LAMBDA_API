@@ -14,7 +14,7 @@ class PostSnowflakeData:
 
         df = pd.DataFrame(payload)
         print(df)
-        print("hol rroa")
+        print("hola rroa")
         chunks = 1000
         start = 0
         for i in range(0,len(df),chunks):

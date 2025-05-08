@@ -31,7 +31,12 @@ resource "null_resource" "ecr_login" {
 # detect code changes in lambda
 resource "null_resource" "lambda_source_changed" {
   triggers = {
-  source_hash = filesha256(join("", fileset("${path.module}/resources/python/aws_lambda", "**/*.py")))
+    source_hash = sha1(join("", [
+      filesha1("${path.module}/resources/python/aws_lambda/lambda_function.py"),
+      filesha1("${path.module}/resources/python/aws_lambda/post.py"),
+      filesha1("${path.module}/resources/python/aws_lambda/get.py"),
+      filesha1("${path.module}/resources/python/aws_lambda/snowflake_response.py")
+    ]))
   }
 }
 
