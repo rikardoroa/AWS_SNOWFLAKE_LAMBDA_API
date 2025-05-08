@@ -13,12 +13,6 @@ class PostSnowflakeData:
 
 
         df = pd.DataFrame(payload)
-        print(df)
-        print("hola rroa")
-        print("hola a rroa")
-        print("hola a rroa")
-        print("hola a rroa")
-        print("hola a rroa")
         chunks = 1000
         start = 0
         for i in range(0,len(df),chunks):

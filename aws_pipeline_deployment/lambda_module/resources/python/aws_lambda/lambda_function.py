@@ -9,6 +9,7 @@ def lambda_handler(event, context):
     api.get_secret()
     get_data  = GetSnowflakeData ()
     post_data = PostSnowflakeData()
+    print("hola ricardo roa")
 
     method = event.get("httpMethod", "").upper()
 
