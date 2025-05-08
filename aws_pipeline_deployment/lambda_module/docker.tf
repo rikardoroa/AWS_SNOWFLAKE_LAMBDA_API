@@ -29,21 +29,7 @@ resource "null_resource" "ecr_login" {
 }
 
 
-# Docker build using linux/amd64 architecture
-resource "null_resource" "build_docker_image" {
-  provisioner "local-exec" {
-    command = <<EOT
-      docker build -t lambda-api-snowflake -f ${path.module}/resources/Dockerfile ${path.module}/resources &&
-      docker tag lambda-api-snowflake:latest ${aws_ecr_repository.lambda_repository.repository_url}:latest
-    EOT
-  }
-  depends_on = [
-    null_resource.ecr_login
-  ]
-}
-
-
-
+# Docker build 
 resource "null_resource" "build_docker_image" {
   provisioner "local-exec" {
     command = "docker build  -t aws_lambda:latest -f ${path.module}/resources/Dockerfile ${path.module}/resources && docker tag aws_lambda:latest ${aws_ecr_repository.lambda_repository.repository_url}:latest"
