@@ -49,7 +49,7 @@ class PostSnowflakeData:
             write_pandas(
                 conn=conn,
                 df=chunks,
-                table_name=table,   
+                table_name=table.upper(),   
                 schema=schema, 
             )
             conn.close()
