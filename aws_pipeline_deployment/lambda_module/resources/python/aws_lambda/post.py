@@ -46,7 +46,7 @@ class PostSnowflakeData:
                 ) VALUES (%s, %s, %s, %s)
                 """
 
-            cur.executemany(insert_sql, data)
+            cur.executemany(insert_sql, emp_data)
             conn.commit()
             conn.close()
 
