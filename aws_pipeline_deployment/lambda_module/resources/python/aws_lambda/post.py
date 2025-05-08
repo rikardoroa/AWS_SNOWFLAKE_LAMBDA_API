@@ -13,15 +13,20 @@ class PostSnowflakeData:
 
 
         df = pd.DataFrame(payload)
+        # chunks = 1000
+        # start = 0
+        # for i in range(0,len(df),chunks):
+        #     chunks_df = df.loc[start:chunks]
+        #     if len(chunks_df) != 0:
+        #         PostSnowflakeData.insert_data(chunks_df)
+        #     start = chunks + 1
+        #     chunks = (start-1) + 1000
         chunks = 1000
-        start = 0
-        for i in range(0,len(df),chunks):
-            chunks_df = df.loc[start:chunks]
-            if len(chunks_df) != 0:
+        for i in range(0, len(df), chunks):
+            chunks_df = df.iloc[i:i+chunks]  # usa iloc para índices numéricos
+            if not chunks_df.empty:
                 PostSnowflakeData.insert_data(chunks_df)
-            start = chunks + 1
-            chunks = (start-1) + 1000
-            
+
         return {
                     "statusCode": 200,
                     "headers": {"Content-Type": "application/json"},
