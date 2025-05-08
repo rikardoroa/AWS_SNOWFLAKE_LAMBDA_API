@@ -13,19 +13,16 @@ class PostSnowflakeData:
 
 
         df = pd.DataFrame(payload)
-        # chunks = 1000
-        # start = 0
-        # for i in range(0,len(df),chunks):
-        #     chunks_df = df.loc[start:chunks]
-        #     if len(chunks_df) != 0:
-        #         PostSnowflakeData.insert_data(chunks_df)
-        #     start = chunks + 1
-        #     chunks = (start-1) + 1000
+        print(df)
         chunks = 1000
-        for i in range(0, len(df), chunks):
-            chunks_df = df.iloc[i:i+chunks]  # usa iloc para índices numéricos
-            if not chunks_df.empty:
+        start = 0
+        for i in range(0,len(df),chunks):
+            chunks_df = df.loc[start:chunks]
+            if len(chunks_df) != 0:
                 PostSnowflakeData.insert_data(chunks_df)
+            start = chunks + 1
+            chunks = (start-1) + 1000
+       
 
         return {
                     "statusCode": 200,
@@ -36,13 +33,31 @@ class PostSnowflakeData:
     @classmethod
     def insert_data(cls, chunks):
         try:
+
+            emp_data = chunks.values.tolist()
             conn = api.get_connection()
-            write_pandas(
-                conn=conn,
-                df=chunks,
-                table_name='EMPLOYEE',   
-                schema='API_DATA', 
-            )
+            cur = conn.cursor()
+            insert_sql = """
+                INSERT INTO EMPLOYEE (
+                    EMPLOYEE_NAME,
+                    EMPLOYEE_HIRED_DATE,
+                    EMPLOYEE_DPT_ID,
+                    EMPLOYEE_JOB_ID
+                ) VALUES (%s, %s, %s, %s)
+                """
+
+            cur.executemany(insert_sql, data)
+            conn.commit()
             conn.close()
+
+
+            # conn = api.get_connection()
+            # write_pandas(
+            #     conn=conn,
+            #     df=chunks,
+            #     table_name='EMPLOYEE',   
+            #     schema='API_DATA', 
+            # )
+            # conn.close()
         except Exception as e:
             print(f"this is the error:{e}")
