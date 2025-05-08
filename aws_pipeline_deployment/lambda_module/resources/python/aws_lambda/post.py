@@ -39,7 +39,7 @@ class PostSnowflakeData:
 
 
     @classmethod
-    def insert_data(cls, chunks, ta):
+    def insert_data(cls, chunks, table):
         try:
 
             conn = api.get_connection()
