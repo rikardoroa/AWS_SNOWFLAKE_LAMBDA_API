@@ -10,9 +10,7 @@ def lambda_handler(event, context):
     get_data  = GetSnowflakeData ()
     post_data = PostSnowflakeData()
     print("hola ricardo roa")
-    print("hola ricardo roa")
-    print("hola ricardo roa")
-    print("hola ricardo roa")
+
 
     method = event.get("httpMethod", "").upper()
 
@@ -27,6 +25,13 @@ def lambda_handler(event, context):
         response = json.loads(event["body"])
         payload = post_data.postdata(response)
         return payload
+
+
+    return {
+                   
+                "body": json.dumps({"message": "success"})  
+            }
+
         
 
 
