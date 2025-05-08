@@ -149,7 +149,7 @@ resource "null_resource" "push_image" {
 # Update Lambda function with new image
 resource "null_resource" "update_lambda_function" {
   provisioner "local-exec" {
-    command = "aws lambda update-function-code --function-name lambda-api-snowflake --image-uri ${aws_ecr_repository.lambda_repository.repository_url}:latest"
+    command = "aws lambda update-function-code --function-name api-incd-docker-lambda --image-uri ${aws_ecr_repository.lambda_repository.repository_url}:latest"
   }
 
   depends_on = [
