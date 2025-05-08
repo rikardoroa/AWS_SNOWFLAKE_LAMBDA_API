@@ -17,7 +17,7 @@ COPY INTO EMPLOYEE (EMPLOYEE_NAME, EMPLOYEE_HIRED_DATE, EMPLOYEE_DPT_ID, EMPLOYE
            e.$3  as EMPLOYEE_HIRED_DATE,
            e.$4 AS EMPLOYEE_DPT_ID, 
            e.$5 AS EMPLOYEE_JOB_ID
-    FROM @employee_stage (file_format => employee_data) e
+    FROM @employee_stage (file_format => api_data) e
 );
 
 
@@ -31,7 +31,7 @@ CREATE OR REPLACE TABLE DEPARTMENTS(
 COPY INTO DEPARTMENTS (DEPARTMENT_NAME )FROM(
 SELECT 
        d.$2 AS DEPARTMENT_NAME
-FROM @department_stage (file_format => employee_data) d ) ;
+FROM @department_stage (file_format => api_data) d ) ;
 
 
 
@@ -44,4 +44,4 @@ CREATE OR REPLACE TABLE JOBS(
 COPY INTO JOBS (JOB_NAME )FROM(
 SELECT
        j.$2 AS JOB_NAME
-FROM @jobs_stage (file_format => employee_data) j ) ;
+FROM @jobs_stage (file_format => api_data) j ) ;

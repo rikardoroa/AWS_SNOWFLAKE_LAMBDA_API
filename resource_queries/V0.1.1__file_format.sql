@@ -2,6 +2,6 @@ USE DATABASE {{ database }};
 USE SCHEMA {{ schema }};
 
 
-CREATE OR REPLACE FILE FORMAT employee_data
+CREATE OR REPLACE FILE FORMAT api_data
 TYPE = 'CSV'
 FIELD_DELIMITER = ',' 
