@@ -2,6 +2,13 @@ import json
 import pandas as pd
 from snowflake.connector.pandas_tools import write_pandas
 from snowflake_response import SnowflakeApi
+import logging
+
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
 
 api = SnowflakeApi()
 
