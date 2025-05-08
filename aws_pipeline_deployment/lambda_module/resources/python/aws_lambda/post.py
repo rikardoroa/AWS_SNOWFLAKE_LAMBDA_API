@@ -9,37 +9,42 @@ class PostSnowflakeData:
 
 
     @classmethod
-    def postdata(cls, payload):
+    def postdata(cls, payload, table):
+        try:
+            df = pd.DataFrame(payload)
+            chunks = 1000
+            start = 0
+            for i in range(0,len(df),chunks):
+                chunks_df = df.loc[start:chunks]
+                if len(chunks_df) != 0:
+                    PostSnowflakeData.insert_data(chunks_df, table)
+                start = chunks + 1
+                chunks = (start-1) + 1000
+        
 
+            return {
+                        "statusCode": 200,
+                        "headers": {"Content-Type": "application/json"},
+                        "body": json.dumps({"message": "success"}, default=str)  
+                    }
+        except Exception as e:
+             logger.info(f"can not create the chunks, verify the process:{e}")
 
-        df = pd.DataFrame(payload)
-        chunks = 1000
-        start = 0
-        for i in range(0,len(df),chunks):
-            chunks_df = df.loc[start:chunks]
-            if len(chunks_df) != 0:
-                PostSnowflakeData.insert_data(chunks_df)
-            start = chunks + 1
-            chunks = (start-1) + 1000
-       
-
-        return {
-                    "statusCode": 200,
-                    "headers": {"Content-Type": "application/json"},
-                    "body": json.dumps({"message": "success"}, default=str)  
-                }
 
     @classmethod
-    def insert_data(cls, chunks):
+    def insert_data(cls, chunks, ta):
         try:
 
             conn = api.get_connection()
+            cur = conn.cursor()
+            cur.execute("SELECT CURRENT_SCHEMA()")
+            schema = cur.fetchone()[0]
             write_pandas(
                 conn=conn,
                 df=chunks,
-                table_name='EMPLOYEE',   
-                schema='API_DATA', 
+                table_name=table,   
+                schema=schema, 
             )
             conn.close()
         except Exception as e:
-            print(f"this is the error:{e}")
+              logger.info(f"can not insert the data into snowflake, we have this error:{e}")

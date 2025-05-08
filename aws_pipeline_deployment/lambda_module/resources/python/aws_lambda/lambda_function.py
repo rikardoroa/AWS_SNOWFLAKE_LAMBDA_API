@@ -9,10 +9,8 @@ def lambda_handler(event, context):
     api.get_secret()
     get_data  = GetSnowflakeData ()
     post_data = PostSnowflakeData()
-    print("hola ricardo roa")
-    print(event)
-
-
+  
+  
     method = event.get("httpMethod", "").upper()
     query_params = event.get("queryStringParameters")
     table = query_params.get("table", "").lower()
@@ -24,18 +22,16 @@ def lambda_handler(event, context):
                 result = api.get_data(table)
                 query =  get_data.getdata(result)
                 return query
-    else:
-        return {
-                "body": json.dumps({"error": "can't  retrieve data!, use a query"})  
-            }
 
-         
+            if method == "POST":
+                response = json.loads(event["body"])
+                payload = post_data.postdata(response, table)
+                return payload
 
-    if method == "POST":
-        response = json.loads(event["body"])
-        payload = post_data.postdata(response)
-        return payload
-
+        if table is None:
+                return {
+                        "body": json.dumps({"error": "can't  retrieve data!, use a query"})  
+                    }
 
     return {
                    
