@@ -10,6 +10,7 @@ def lambda_handler(event, context):
     get_data  = GetSnowflakeData ()
     post_data = PostSnowflakeData()
     print("hola ricardo roa")
+    print(event)
 
 
     method = event.get("httpMethod", "").upper()

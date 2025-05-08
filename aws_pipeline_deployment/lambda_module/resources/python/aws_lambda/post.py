@@ -33,30 +33,13 @@ class PostSnowflakeData:
     def insert_data(cls, chunks):
         try:
 
-            emp_data = chunks.values.tolist()
             conn = api.get_connection()
-            cur = conn.cursor()
-            insert_sql = """
-                INSERT INTO EMPLOYEE (
-                    EMPLOYEE_NAME,
-                    EMPLOYEE_HIRED_DATE,
-                    EMPLOYEE_DPT_ID,
-                    EMPLOYEE_JOB_ID
-                ) VALUES (%s, %s, %s, %s)
-                """
-
-            cur.executemany(insert_sql, emp_data)
-            conn.commit()
+            write_pandas(
+                conn=conn,
+                df=chunks,
+                table_name='EMPLOYEE',   
+                schema='API_DATA', 
+            )
             conn.close()
-
-
-            # conn = api.get_connection()
-            # write_pandas(
-            #     conn=conn,
-            #     df=chunks,
-            #     table_name='EMPLOYEE',   
-            #     schema='API_DATA', 
-            # )
-            # conn.close()
         except Exception as e:
             print(f"this is the error:{e}")
