@@ -46,27 +46,26 @@ class SnowflakeApi:
         try:
             conn = self.get_connection()
             cur = conn.cursor()
-            if table == 'employee':
-                cur.execute('select * from employee order by  employee_id')
-                emp_results = cur.fetchall()
-                df = pd.DataFrame(emp_results)
-                df['EMPLOYEE_HIRED_DATE'] = df['EMPLOYEE_HIRED_DATE'].astype('str')
-                all_emp_data = json.loads(df.to_json(orient='records'))
-                return all_emp_data
+             
+            metadata = {
+                    'employee': 'select * from employee order by employee_id',
+                    'departments':'select * from departments',
+                    'jobs': 'select * from jobs'
+            }
 
-            if table == 'departments':
-                cur.execute('select * from departments')
-                dpt_results = cur.fetchall()
-                df = pd.DataFrame(dpt_results)
-                all_dpt_data = json.loads(df.to_json(orient='records'))
-                return all_dpt_data
+            query = metadata.get(table)
+            if query:
+                cur.execute(query)
+                snowflake_table_results = cur.fetchall()
+                columns = [desc[0] for desc in cur.description]
+                df = pd.DataFrame(snowflake_table_results, columns=columns)
+                all_data = json.loads(df.to_json(orient='records'))
+                return all_data
+            else:
+                return [{"error": f"Invalid table '{table}' specified."}]
 
-            if table == 'jobs':
-                cur.execute('select * from jobs')
-                job_results = cur.fetchall()
-                df = pd.DataFrame(job_results)
-                all_job_data = json.loads(df.to_json(orient='records'))
-                return all_job_data
+
+          
         except Exception as e:
              logger.info(f"can not create the dataframe, verify the process:{e}")
 

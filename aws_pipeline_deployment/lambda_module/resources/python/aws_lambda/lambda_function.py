@@ -23,11 +23,9 @@ def lambda_handler(event, context):
             result = api.get_data(table)
             query =  get_data.getdata(result)
             return query
-
     else:
         return {
-                   
-                "body": json.dumps({"error": "can't  retrieve data!, use a query"})  
+                 "body": json.dumps({"error": "can't  retrieve data!, use a query"})  
                }
 
          
