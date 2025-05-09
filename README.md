@@ -338,7 +338,7 @@ GET https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGet
         "EMPLOYEE_JOB_ID": 5
     },
     {
-        "EMPLOYEE_ID": 1,
+        "EMPLOYEE_ID": 2,
         "EMPLOYEE_NAME": "John Doe",
         "EMPLOYEE_HIRED_DATE": "2021-05-01",
         "EMPLOYEE_DPT_ID": 7,
