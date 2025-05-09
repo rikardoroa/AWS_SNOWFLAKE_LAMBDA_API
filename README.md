@@ -234,6 +234,21 @@ POST https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGe
 GET https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=jobs
 ```
 
+**Body:**
+
+```json
+[
+   {
+        "JOB_ID": 1,
+        "JOB_NAME": "Backend Developer"
+    },
+    {
+        "JOB_ID": 2,
+        "JOB_NAME": "DevOps Engineer"
+    }
+]
+```
+
 ### POST example - departments
 
 **Endpoint:**
@@ -260,6 +275,22 @@ POST https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGe
 GET https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=departments
 ```
 
+**Body:**
+
+```json
+[
+   {
+        "DEPARTMENT_ID": 1,
+        "DEPARTMENT_NAME": "IT Support 2999"
+    },
+    {
+        "DEPARTMENT_ID": 2,
+        "DEPARTMENT_NAME": "QA 3000"
+    }
+]
+```
+
+
 ### POST example - employee
 
 **Endpoint:**
@@ -275,14 +306,14 @@ POST https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGe
   {
     "EMPLOYEE_NAME": "Alice Smith",
     "EMPLOYEE_HIRED_DATE": "2021-07-01",
-    "EMPLOYEE_DPT_ID": 1,
-    "EMPLOYEE_JOB_ID": 2
+    "EMPLOYEE_DPT_ID": 2,
+    "EMPLOYEE_JOB_ID": 5
   },
   {
     "EMPLOYEE_NAME": "John Doe",
-    "EMPLOYEE_HIRED_DATE": "2022-01-15",
-    "EMPLOYEE_DPT_ID": 2,
-    "EMPLOYEE_JOB_ID": 1
+    "EMPLOYEE_HIRED_DATE": "2021-05-01",
+    "EMPLOYEE_DPT_ID": 7,
+    "EMPLOYEE_JOB_ID": 3
   }
 ]
 ```
@@ -293,4 +324,25 @@ POST https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGe
 
 ```
 GET https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=employee
+```
+
+**Body:**
+
+```json
+[
+   {
+        "EMPLOYEE_ID": 1,
+        "EMPLOYEE_NAME": "Alice Smith",
+        "EMPLOYEE_HIRED_DATE": "2021-01-01",
+        "EMPLOYEE_DPT_ID": 2,
+        "EMPLOYEE_JOB_ID": 5
+    },
+    {
+        "EMPLOYEE_ID": 1,
+        "EMPLOYEE_NAME": "John Doe",
+        "EMPLOYEE_HIRED_DATE": "2021-05-01",
+        "EMPLOYEE_DPT_ID": 7,
+        "EMPLOYEE_JOB_ID": 3
+    }
+]
 ```
