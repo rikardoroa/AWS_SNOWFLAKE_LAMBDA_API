@@ -1,14 +1,13 @@
 
 # AWS Snowflake Pipeline for Fire Incidents Data Capture
 
-## Project Description
+## General overview for configuration
 
 ### 1. Project Features
 
-This project uses several AWS Services and Snowflake as Datawarehouse to capture incremental data from https://data.sfgov.org/Public-Safety/Fire-Incidents/wr8u-xric/about_data,
-the final output is a materialized view from a permanent table, that will be the primary object to create the several necessary dimensions.
+This project use two AWS Services to ingest data into snowflake using AWS API Gateway and one single AWS Lambda instance
 
-## AWS CLI Installation and Bucket Configuration for Terraform
+## Prerequisites
 
 ### 1. AWS CLI Installation
 
@@ -27,7 +26,8 @@ The AWS CLI is essential for managing credentials and configuring the environmen
 3. **Windows Installation**:
    For Windows users, refer to the [AWS CLI Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
-4. **Terraform Environment Configuration**:
+
+### 2. Terraform Environment Configuration:
    
    - **Check if the Bucket Exists**:
         ```bash
@@ -52,80 +52,7 @@ The AWS CLI is essential for managing credentials and configuring the environmen
         aws s3api put-public-access-block --bucket your_bucket --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
         ```
 
-## Bucket Configuration for AWS Lambda and AWS Glue Resources
-
-### 1. Bucket Creation for Lambda and Glue
-
-The `lambda_module` in the Terraform environment contains a `buckets.json` file. Ensure each bucket name is unique to avoid errors:
-
-```json
-{
-  "buckets": [
-      { "name": "dev-fire-incidents-dt" }, 
-      { "name": "dev-fire-incidents-dt-all" },
-      { "name": "dev-fire-incidents-dt-glue-python" }
-  ]
-}
-```
-- The bucket **__dev-fire-incidents-dt__** ingest the API Calls executed by the AWS Lambda Function, the files in this bucket, will be deleted after the glue job is executed, this will prevent keep unnesseray files in the bucket
-
-- The bucket **__dev-fire-incidents-dt-all__** store the incremental load executed by AWS Glue Job
-
-- The bucket **__dev-fire-incidents-dt-glue-python__** will store the AWS Glue Job code
-
-- The bucket **__dev-fire-incidents-dt__** is env variable for the AWS Lambda Function and that value is configured in **__variables.tf__** file from the **__lambda_module__** as follows:
-
-   ```hcl
-        variable "lambda_bucket"{
-            description = "Bucket to store the API Call data execute by the AWS Lambda Function"
-            type = string
-            default = "dev-fire-incidents-dt"
-
-        }
-
-    ```
-- For Changing the Bucket names follow the previous validation and also follow the configuration steps described below.
-
-
-### 2. Changing Bucket Names
-
-To modify bucket names, update the `outputs.tf` file in the `lambda_module` and the `buckets.json` file :
-
-```hcl
-output "glue_bucket" {
-    value = aws_s3_bucket.bucket_creation["dev-fire-incidents-dt-glue-python"].id
-}
-```
-
-Replace the bucket name as necessary:
-
-```hcl
-output "glue_bucket" {
-    value = aws_s3_bucket.bucket_creation["my_other_bucket"].id
-}
-```
-
-### 3. Configuring AWS Regions for Resources
-
-The Glue and Lambda modules contain a `providers.tf` file for region configuration. Ensure your AWS region is set correctly:
-
-```hcl
-provider "aws" {
-    region = "us-east-2"
-}
-```
-
-Update the region in the `variables.tf` file as well:
-
-```hcl
-variable "aws_region" {
-    description = "aws region"
-    type = string
-    default = "us-east-2"
-}
-```
-
-## Backend Configuration for Terraform State
+### 4. Backend Configuration for Terraform State
 
 To capture changes in your Terraform configuration, update the `backend.hcl` file with the correct bucket name, if you want to change, verify and check if the bucket is available, apply the previous steps , this is entry in the mentioned `backend.hcl` file:
 
@@ -133,111 +60,156 @@ To capture changes in your Terraform configuration, update the `backend.hcl` fil
 bucket = "dev-fire-incidents-dt-tf-state"
 ```
 
-## Project Description
 
-### Project Structure for AWS_PIPELINE_SNOWFLAKE Repository:
+### 5. Create a snowflake trail account 
 
-```bash
-.
-├── .github/
-│   └── workflows/
-│       ├── AWS_CREATION_PIPELINE_SN.yml
-│       ├── AWS_DESTROY_PIPELINE_SN.yml
-│       └── SNOWFLAKE_RESOURCES.yml
-├── aws_pipeline_deployment/
-│   ├── glue_module/
-│   │   ├── glue_script/
-│   │   │   └── GlueJobScript.py
-│   │   ├── glue.tf
-│   │   ├── providers.tf
-│   │   └── variables.tf
-│   ├── lambda_module/
-│   │   ├── resources/
-│   │   │   ├── python/
-│   │   │   │   └── aws_lambda/
-│   │   │   │       ├── api_calls.py
-│   │   │   │       └── lambda_function.py
-│   │   │   ├── Dockerfile
-│   │   │   └── requirements.txt
-│   │   ├── bucket.tf
-│   │   ├── buckets.json
-│   │   ├── docker.tf
-│   │   ├── iam_role.tf
-│   │   ├── lambda.tf
-│   │   ├── local.tf
-│   │   ├── outputs.tf
-│   │   ├── providers.tf
-│   │   └── variables.tf
-├── main.tf
-├── versions.tf
-├── resource_queries/
-│   ├── V0.1.1_file_format.sql
-│   ├── V0.1.2_external_table.sql
-│   ├── V0.1.3_stream_creation.sql
-│   ├── V0.1.4_permanent_table_creation.sql
-│   ├── V0.1.5_materialized_view.sql
-│   └── V0.1.6_task_creation.sql
-├── backend.hcl
-└── README.md
+Before using this project is necessary set up a snowflake trial account , this tutorial is hepful: https://anishmahapatra.medium.com/how-to-set-up-a-free-snowflake-account-0cb7d00b230a
+
+
+### 6. Set up important configuration after account creation
+
+After the account creation is necessary to configure several things as follow:
+
+1. **Create a STORAGE INTEGRATION**:
+
+- **role creation**: to set up a storage integration is necessary to create a AWS IAM ROLE with **__AmazonS3FullAccess__** permissions this is for this practice only
+
+- **bucket creation**: after the role definition is necessary also the creation of a S3 bucket, verify if the bucket exist in AWS before create it, also the bucket must be defines in terraform environment variables regarding the  **__lambda module__**, this is how the bucket is defined in **__bucket.tf__** file like this:
+```hcl
+    variable "curated_bucket" {
+        description = "curated bucket"
+        type = string
+        default = "api-snowflake-data"
+    }
+```
+- **load csv files in aws S3**: after the bucket creation is necessary load the csv files for this project in AWS S3 you can use  aws cli console or AWS GUI, the files are located in the root folder of the project
+
+
+- **storage integration creation**: after set up the role is necessary create the **__STORAGE INTEGRATION FEATURE__** as follows:
+```sql
+      CREATE OR REPLACE STORAGE INTEGRATION api_data_aws_integration
+        TYPE = EXTERNAL_STAGE
+        STORAGE_PROVIDER = 'S3'
+        STORAGE_AWS_ROLE_ARN =  'arn role' 
+        ENABLED = TRUE
+        STORAGE_ALLOWED_LOCATIONS = ('your bucket url');
 ```
 
-### Key Directories:
+- **trust relationship**: after the role and storage integration are created is necessary to establish a **__trust relationship__** to permit the AWS S3 bucket connection with the snowflake stage to query the data, this snowflake tutorial is very complete related to the steps to do all the configuration for the AWS side :https://docs.snowflake.com/en/user-guide/data-load-s3-config-storage-integration, this is also a youtube tutorial https://www.youtube.com/watch?v=eCQTKpcOaMg&t=847s
+
+
+
+- **database and schema creation**: after set up all the previous steps is necessary to create the database and schema manually as follows:
+
+```sql
+    CREATE DATABASE IF NOT EXISTS API_LAYER;
+
+    CREATE SCHEMA IF NOT EXISTS API_DATA;
+```
+
+
+### 7. Schemachange Table Creation
+
+I am using Schemachange to create and deploy snowflake objects into snowflake environment, so before using GitHub Actions to deploy objects via Schemachange, create the following Snowflake table in the schema mentioned below otherwise the deployment will fail, this table is to track object changes after deployment :
+
+```sql
+CREATE TABLE IF NOT EXISTS CHANGE_HISTORY
+(
+    VERSION VARCHAR,
+    DESCRIPTION VARCHAR,
+    SCRIPT VARCHAR,
+    SCRIPT_TYPE VARCHAR,
+    CHECKSUM VARCHAR,
+    EXECUTION_TIME NUMBER,
+    STATUS VARCHAR,
+    INSTALLED_BY VARCHAR,
+    INSTALLED_ON TIMESTAMP_LTZ
+);
+```
+
+### 8. Snowflake Credentials and AWS Credentials
+
+To successfully deploy Snowflake and AWS objects via GitHub Actions, ensure full authentication using the following credentials:
+
+- **SNOWFLAKE_ACCOUNT as ACCOUNT**
+- **SNOWFLAKE_USER as USER**
+- **SNOWFLAKE_ROLE as ROLE**
+- **SNOWFLAKE_PASSWORD as PASSWORD**
+- **SNOWFLAKE_WH  as WAREHOUSE**
+- **SNOWFLAKE_DB as DATABASE**
+- **SNOWFLAKE_SCHEMA as SCHEMA**
+- **AWS_ACCESS_KEY_ID**
+- **AWS_SECRET_ACCESS_KEY**
+also is necessary define the variable **__SCHEMACHANGE_VAR__** as  a secret in our repository follows:
+```json
+'{"database": "my_database_valu", "schema": "my_schema_value"}'
+```
+
+
+## Project Structure
+
+### 1. Project Structure for AWS_PIPELINE_SNOWFLAKE Repository:
+
+```bash
+    ├── .github/
+    │   └── workflows/
+    │       ├── AWS_CREATION_PIPELINE_SN.yml
+    │       ├── AWS_DESTROY_PIPELINE_SN.yml
+    │       └── SNOWFLAKE_RESOURCES.yml
+    ├── aws_pipeline_deployment/
+    │   ├── api_gateway_module/
+    │   │   ├── api_getaway.tf
+    │   │   ├── providers.tf
+    │   │   └── variables.tf
+    │   ├── lambda_module/
+    │   │   ├── bucket.tf
+    │   │   ├── docker.tf
+    │   │   ├── iam_role.tf
+    │   │   ├── lambda.tf
+    │   │   ├── outputs.tf
+    │   │   ├── providers.tf
+    │   │   ├── variables.tf
+    │   │   └── resources/
+    │   │       ├── Dockerfile
+    │   │       ├── requirements.txt
+    │   │       └── python/
+    │   │           └── aws_lambda/
+    │   │               ├── get.py
+    │   │               ├── lambda_function.py
+    │   │               ├── post.py
+    │   │               └── snowflake_response.py
+    ├── resource_queries/
+    │   ├── V0.1.1__file_format.sql
+    │   ├── V0.1.2__stage_creation.sql
+    │   ├── V0.1.3__tables_creation.sql
+    │   ├── V0.1.4__employee_view.sql
+    │   └── V0.1.5__hiring_avg_2021_view.sql
+    ├── backend.hcl
+    ├── main.tf
+    ├── versions.tf
+    └── README.md
+```
+
+### 2. Key Directories:
 
 1. **workflows**: CI/CD files to create AWS and Snowflake resources.
 
-2. **glue_module**: Contains Python and Terraform files to deploy the Glue job, capturing incremental updates from the Fire Incidents API.
+2. **api_gateway_module**: Contains  Terraform files to deploy the API Gateway for get and post methods
 
 3. **lambda_module**: Contains Python, Docker, and Terraform configuration files to deploy AWS Lambda and S3 buckets for API data storage with KMS encryption.
 
-4. **aws_pipeline_deployment**: The root directory containing Glue and Lambda modules. It also includes **main.tf** and **versions.tf** for detecting changes when workflows are deployed via GitHub Actions.
+4. **aws_snowflake_lambda_api**: The root directory containing Api Gateway and Lambda modules. It also includes **main.tf** and **versions.tf** for detecting changes when workflows are deployed via GitHub Actions.
 
 5. **resource_queries**: SQL queries to create Snowflake resources for data ingestion.
 
-## Before Workflows Execution
 
-1. Before execute the Github Actions Workflows is necessary acomplish some prerequisites:
-   - Is necessery create your Snowflake Database, Schema and Warehouse
-
-   - Create Storage Integration and Configure a Role in your AWS Console for secure access, to do so you can follow this Snowflake documentation here: https://docs.snowflake.com/en/user-guide/data-load-s3-config-storage-integration or follow this youtube video: https://www.youtube.com/watch?v=eCQTKpcOaMg
-
-   - Create and Configure a Snowflake Stage, attach the bucket in the stage configuration, like follows:
-     
-     ```sql
-        
-            CREATE OR REPLACE STAGE your_stage
-            URL='s3://your_bucket/path/'
-            DIRECTORY = ( ENABLE = TRUE,  AUTO_REFRESH = true )
-            STORAGE_INTEGRATION = your_storage_integration;
-     ```
-
-     After that do **__DESC STAGE your_stage__** and copy the SQS ARN value and create a notificacion event in the S3 Bucket Configured in the AWS Lambda Function, this step is important because the SQS will capture the new data ingested in the S3 Bucket to capture the incremental data in Snowflake, you can follow this Snowflake official documentation: https://docs.snowflake.com/en/user-guide/data-load-dirtables-auto-s3#option-1-creating-a-new-s3-event-notification
-
-
-    - Set up your Snowflake Credentials in Github as Secrets for **__ROLE__**, **__ACCOUNT__**,**__SCHEMA__**,**__DATABASE__**,**__WAREHOUSE__**,**__PASSWORD__** and **__USER__**
-
-
-    - Set up a value for **__SCHEMACHANGE_VAR__** in Github as a secret to store **__SCHEMA__**,**__DATABASE__**,**__WAREHOUSE__**, **__ROLE__** and **__BUCKET__**, for example:
-    ```json
-            {
-                "database":"your_database",
-                "schema":"your_schema",
-                "role":"arn:aws:iam::your_account_id:role/your_role_name",
-                "bucket":"your_bucket",
-                "warehouse":"your_warehouse"
-            }
-    ```
-    - Create the CHANGE_HISTORY table in Snowflake with in your current Datababase and Warehouse that you are using for the project
-
-    - Set up the Dates for Both Event Bridge Schedulers related to AWS Glue Job and AWS Lambda Function, those Dates entries are located in **__glue.tf__** and **__lambda.tf files__**
-           
-
-## Workflows Execution
+### 3. Workflows Execution
 
 1. The project will Run **__AWS_CREATION_PIPELINE_SN__**  Workflow on **__push__**, to run successfully this Worflow everything needs to be set up.
 
 2. After Run **__AWS_CREATION_PIPELINE_SN__** , the Workflow **__SNOWFLAKE_RESOURCES__** can be executed Manually, because is using **__Workflow__dispatch__** action, thiw workflow will create every Snowflake Object to capture de data incrementally from the Stage, the incrementall capture will Fail if the Snowflake enviroment is not configured correctly.
 
-3. The Worflow **__AWS_DESTROY_PIPELINE_SN__** is optional, and also is configured to be executed Manually By the user, this Workflow will do a deletion of every Resource Created by terraform, after deletion is necessary to Set up Again the AWS Lambda Bucket with an Event Notification using the SQS Generated by Snowflake.
+3. The Worflow **__AWS_DESTROY_PIPELINE_SN__** is optional, and also is configured to be executed Manually By the user, this Workflow will do a deletion of every Resource Created by terraform.
 
 ## Snowflake Schemachange
 
@@ -266,32 +238,3 @@ Each version annotation is linked to a Snowflake object (table, file format, str
 - **Description**: An arbitrary description with words separated by underscores or spaces (cannot include two underscores).
 - **Suffix**: `.sql` or `.sql.jinja`.
 
-### 2. Schemachange Table Creation
-
-Before using GitHub Actions to deploy objects via Schemachange, create the following Snowflake table to track changes:
-
-```sql
-CREATE TABLE IF NOT EXISTS CHANGE_HISTORY
-(
-    VERSION VARCHAR,
-    DESCRIPTION VARCHAR,
-    SCRIPT VARCHAR,
-    SCRIPT_TYPE VARCHAR,
-    CHECKSUM VARCHAR,
-    EXECUTION_TIME NUMBER,
-    STATUS VARCHAR,
-    INSTALLED_BY VARCHAR,
-    INSTALLED_ON TIMESTAMP_LTZ
-);
-```
-
-### 3. Snowflake Credentials
-
-To successfully deploy Snowflake objects via GitHub Actions, ensure full authentication using the following credentials:
-
-- **ACCOUNT**
-- **USER**
-- **ROLE**
-- **PASSWORD**
-- **WAREHOUSE**
-- **DATABASE**
