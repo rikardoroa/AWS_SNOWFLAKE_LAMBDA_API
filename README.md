@@ -141,8 +141,8 @@ To successfully deploy Snowflake and AWS objects via GitHub Actions, ensure full
 - **AWS_ACCESS_KEY_ID**
 - **AWS_SECRET_ACCESS_KEY**
 also is necessary define the variable **__SCHEMACHANGE_VAR__** as  a secret in our repository follows:
-```json
-'{"database": "my_database_valu", "schema": "my_schema_value"}'
+```bash
+    '{"database": "my_database_valu", "schema": "my_schema_value"}'
 ```
 
 
