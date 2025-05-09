@@ -14,11 +14,26 @@ logger.setLevel(logging.INFO)
 class SnowflakeApi:
 
     def __init__(self):
+        """
+        Initializes the AWS Secrets Manager client to retrieve Snowflake credentials.
+        """
+
         self.session = boto3.session.Session()
         self.client = self.session.client(service_name='secretsmanager')
         self.secret = "snowflake_credentials"
 
     def get_secret(self):
+        """
+        Retrieves Snowflake connection credentials from AWS Secrets Manager.
+
+        Returns:
+            dict: A dictionary containing keys such as 'account', 'user', 'password',
+                  'warehouse', 'database', 'schema', and 'role'.
+
+        Logs:
+            Logs an error message if the secret cannot be retrieved.
+        """
+
         try:
             response = self.client.get_secret_value(SecretId=self.secret)
             snowflake_data = json.loads(response['SecretString'])
@@ -42,8 +57,22 @@ class SnowflakeApi:
         except Exception as e:
              logger.info(f"can not connect to snowflake, verify connection credentials:{e}")
 
+
+
     def get_data(self, table):
         try:
+            """
+            Establishes and returns a connection to the Snowflake database using the
+            credentials obtained from the secret.
+
+            Returns:
+                snowflake.connector.connection.SnowflakeConnection: Active connection object.
+
+            Logs:
+                Logs an error message if the connection cannot be established.
+            """
+
+            
             conn = self.get_connection()
             cur = conn.cursor()
              

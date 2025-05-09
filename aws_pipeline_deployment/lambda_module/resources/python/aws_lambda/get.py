@@ -5,6 +5,16 @@ class GetSnowflakeData:
 
     @classmethod
     def getdata(cls, payload):
+        """
+        Wraps the given payload in a 200 OK JSON response.
+
+        Args:
+            payload (list or dict): Data to return as JSON.
+
+        Returns:
+            dict: HTTP response with JSON body.
+        """
+        
         try:
 
             return {

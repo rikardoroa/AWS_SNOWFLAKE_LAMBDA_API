@@ -17,6 +17,20 @@ class PostSnowflakeData:
 
     @classmethod
     def postdata(cls, payload, table):
+        
+        """
+        Splits the input data into chunks and inserts them into the specified Snowflake table.
+
+        Args:
+            payload (list[dict]): A list of JSON records to insert.
+            table (str): The name of the Snowflake table to insert into.
+
+        Returns:
+            dict: A standard API response object with status code and message.
+
+        Logs:
+            Logs an error if chunking or processing fails.
+        """
         try:
             df = pd.DataFrame(payload)
             chunks = 1000
@@ -41,6 +55,17 @@ class PostSnowflakeData:
     @classmethod
     def insert_data(cls, chunks, table):
         try:
+            
+            """
+            Inserts a chunk of data into a specified Snowflake table using the write_pandas helper.
+
+            Args:
+                chunks (pd.DataFrame): A DataFrame containing the data to insert.
+                table (str): The name of the table where the data will be inserted.
+
+            Logs:
+                Logs an error message if insertion fails.
+            """
 
             conn = api.get_connection()
             cur = conn.cursor()
