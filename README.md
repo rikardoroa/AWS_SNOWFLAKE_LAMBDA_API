@@ -1,5 +1,5 @@
 
-# AWS Snowflake Pipeline for Fire Incidents Data Capture
+# AWS Snowflake Pipeline for API Integration and Development with AWS Services
 
 ## General overview for configuration
 
