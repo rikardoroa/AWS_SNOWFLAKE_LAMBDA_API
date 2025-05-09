@@ -206,12 +206,12 @@ Set these in your repo secrets:
 
 ## API Usage
 
-### POST method - /SnowflakeGetData
+### POST example - jobs
 
 **Endpoint:**
 
 ```
-POST https://2kqz8zbti2.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=jobs
+POST https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=jobs
 ```
 
 **Body:**
@@ -219,36 +219,56 @@ POST https://2kqz8zbti2.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData
 ```json
 [
   {"JOB_NAME": "IT Support"},
-  {"JOB_NAME": "Data Scientist"}
+  {"JOB_NAME": "Data Scientist"},
+  {"JOB_NAME": "AI Researcher"},
+  {"JOB_NAME": "Backend Developer"},
+  {"JOB_NAME": "DevOps Engineer"}
 ]
 ```
 
-### GET method - /SnowflakeGetData
+### GET example - jobs
 
 **Endpoint:**
 
 ```
-GET https://2kqz8zbti2.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=jobs
+GET https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=jobs
 ```
 
 ### POST example - departments
 
+**Endpoint:**
+
 ```
-POST https://2kqz8zbti2.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=departments
+POST https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=departments
 ```
+
+**Body:**
 
 ```json
 [
   {"DEPARTMENT_NAME": "Technology"},
-  {"DEPARTMENT_NAME": "Finance"}
+  {"DEPARTMENT_NAME": "Finance"},
+  {"DEPARTMENT_NAME": "Human Resources"}
 ]
+```
+
+### GET example - departments
+
+**Endpoint:**
+
+```
+GET https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=departments
 ```
 
 ### POST example - employee
 
+**Endpoint:**
+
 ```
-POST https://2kqz8zbti2.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=employee
+POST https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=employee
 ```
+
+**Body:**
 
 ```json
 [
@@ -257,6 +277,20 @@ POST https://2kqz8zbti2.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData
     "EMPLOYEE_HIRED_DATE": "2021-07-01",
     "EMPLOYEE_DPT_ID": 1,
     "EMPLOYEE_JOB_ID": 2
+  },
+  {
+    "EMPLOYEE_NAME": "John Doe",
+    "EMPLOYEE_HIRED_DATE": "2022-01-15",
+    "EMPLOYEE_DPT_ID": 2,
+    "EMPLOYEE_JOB_ID": 1
   }
 ]
+```
+
+### GET example - employee
+
+**Endpoint:**
+
+```
+GET https://dummyapigateway.execute-api.us-east-2.amazonaws.com/dev/SnowflakeGetData?table=employee
 ```
