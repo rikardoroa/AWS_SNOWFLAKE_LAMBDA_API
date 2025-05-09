@@ -2,7 +2,7 @@ USE DATABASE {{ database }};
 USE SCHEMA {{ schema }};
 
 create or replace view employees_hired as(
-wwith employee_data as(
+with employee_data as(
   select 
     department_name, 
     job_name, 
